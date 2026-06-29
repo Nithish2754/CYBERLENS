@@ -1,205 +1,145 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Globe, Mail, Brain, CheckCircle, Zap, Shield } from 'lucide-react'
-import { motion } from 'framer-motion'
-import layatechLogo from '../assets/layatech-logo.png'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import logo from '../assets/layatech-logo.png'
 
 export default function Home() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
+  const navigate = useNavigate()
+  const [showLine1, setShowLine1] = useState(false)
+  const [showLine2, setShowLine2] = useState(false)
+  const [showLine3, setShowLine3] = useState(false)
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
+  useEffect(() => {
+    setTimeout(() => setShowLine1(true), 200)
+    setTimeout(() => setShowLine2(true), 400)
+    setTimeout(() => setShowLine3(true), 600)
+  }, [])
 
   return (
-    <div className="matrix-bg min-h-screen pt-20 pb-20">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="max-w-6xl mx-auto px-6"
-      >
-        {/* Header Badge */}
-        <motion.div variants={itemVariants} className="text-center mb-12">
-          <div className="inline-block px-4 py-2 border border-cyber-accent-cyan rounded text-cyber-accent-cyan font-mono text-xs font-bold tracking-widest">
-            [ THREAT INTELLIGENCE PLATFORM v1.0 ]
-          </div>
-        </motion.div>
+    <div style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', gap: '60px', position: 'relative' }}>
+      
+      {/* Background Particles (CSS only logic applied here inline via simple styles if needed, or rely on neural-bg) */}
+
+      {/* Hero Section */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginTop: '40px' }}>
+        
+        {/* Top Badge */}
+        <div style={{
+          border: '1px solid var(--accent-violet)',
+          padding: '8px 24px',
+          fontFamily: 'Share Tech Mono',
+          fontSize: '12px',
+          color: 'var(--accent-ice)',
+          letterSpacing: '0.2em',
+          clipPath: 'polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%)',
+          marginBottom: '40px',
+          background: 'rgba(123, 47, 255, 0.05)'
+        }}>
+          [ THREAT INTELLIGENCE PLATFORM v2.0 ]
+        </div>
 
         {/* Main Heading */}
-        <motion.div variants={itemVariants} className="text-center mb-8">
-          <h1 className="font-mono text-6xl font-bold leading-tight mb-4">
-            <span className="text-cyber-text-primary">DETECT.</span>
-            <br />
-            <span className="text-gradient">ANALYZE.</span>
-            <br />
-            <span className="text-cyber-text-primary">PROTECT.</span>
-          </h1>
-          <p className="text-cyber-text-secondary max-w-2xl mx-auto text-lg font-mono">
-            Real-time phishing detection powered by VirusTotal, Google Safe Browsing & Gemini AI
-          </p>
-        </motion.div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
+          <h1 style={{
+            fontFamily: 'Orbitron',
+            fontWeight: 900,
+            fontSize: '80px',
+            color: '#fff',
+            lineHeight: 1,
+            opacity: showLine1 ? 1 : 0,
+            transform: showLine1 ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'all 0.6s ease'
+          }}>DETECT.</h1>
+          
+          <h1 style={{
+            fontFamily: 'Orbitron',
+            fontWeight: 900,
+            fontSize: '80px',
+            background: 'linear-gradient(90deg, #b983ff, #7b2fff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: '0 0 40px rgba(123, 47, 255, 0.4)',
+            lineHeight: 1,
+            opacity: showLine2 ? 1 : 0,
+            transform: showLine2 ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'all 0.6s ease'
+          }}>ANALYZE.</h1>
+          
+          <h1 style={{
+            fontFamily: 'Orbitron',
+            fontWeight: 900,
+            fontSize: '80px',
+            color: '#fff',
+            lineHeight: 1,
+            opacity: showLine3 ? 1 : 0,
+            transform: showLine3 ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'all 0.6s ease'
+          }}>PROTECT<span style={{ color: 'var(--accent-neon)', textShadow: '0 0 20px rgba(57, 255, 20, 0.6)' }}>.</span></h1>
+        </div>
 
-        {/* Scan Buttons */}
-        <motion.div variants={itemVariants} className="flex gap-6 justify-center mb-12">
-          <Link
-            to="/url"
-            className="cyber-button flex items-center gap-3 px-8 py-4 text-lg hover:glow-cyan"
-          >
-            <Globe size={24} />
-            SCAN URL
-          </Link>
-          <Link
-            to="/email"
-            className="cyber-button flex items-center gap-3 px-8 py-4 text-lg"
-            style={{ borderColor: '#7c3aed', color: '#7c3aed' }}
-          >
-            <Mail size={24} />
-            ANALYZE EMAIL
-          </Link>
-        </motion.div>
+        {/* Subtext */}
+        <p style={{
+          fontFamily: 'Exo 2',
+          fontSize: '18px',
+          color: 'var(--text-secondary)',
+          marginBottom: '48px',
+          maxWidth: '600px',
+          lineHeight: 1.6
+        }}>
+          Neural threat intelligence across 12+ security engines
+        </p>
 
-        {/* Stats Bar */}
-        <motion.div
-          variants={itemVariants}
-          className="flex justify-center gap-12 mb-8 font-mono text-cyber-text-secondary text-sm"
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle size={16} className="text-cyber-accent-green" />
-            90+ Security Engines
+        {/* CTA Buttons */}
+        <div style={{ display: 'flex', gap: '24px', marginBottom: '60px' }}>
+          <button className="btn-scan" onClick={() => navigate('/url')}>
+            ◈ SCAN URL
+          </button>
+          <button className="btn-scan" style={{ background: 'transparent', border: '1px solid var(--accent-neon)', color: 'var(--accent-neon)' }} onClick={() => navigate('/email')}
+            onMouseEnter={e => { e.target.style.background = 'rgba(57, 255, 20, 0.1)'; e.target.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.3)'; }}
+            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.boxShadow = 'none'; }}>
+            ⊠ ANALYZE EMAIL
+          </button>
+        </div>
+
+        {/* Stat Indicators */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ fontFamily: 'Orbitron', fontSize: '12px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--accent-violet)' }}>◈</span> 12+ SECURITY ENGINES
           </div>
-          <div className="text-cyber-border">|</div>
-          <div className="flex items-center gap-2">
-            <Zap size={16} className="text-cyber-accent-cyan" />
-            AI-Powered Analysis
+          <div style={{ width: '30px', height: '1px', background: 'var(--border-dim)', transform: 'rotate(-45deg)' }}></div>
+          <div style={{ fontFamily: 'Orbitron', fontSize: '12px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--accent-ice)' }}>⬡</span> AI-NEURAL ANALYSIS
           </div>
-          <div className="text-cyber-border">|</div>
-          <div className="flex items-center gap-2">
-            <Shield size={16} className="text-cyber-accent-purple" />
-            Real-time Detection
+          <div style={{ width: '30px', height: '1px', background: 'var(--border-dim)', transform: 'rotate(-45deg)' }}></div>
+          <div style={{ fontFamily: 'Orbitron', fontSize: '12px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--accent-neon)' }}>⚡</span> REAL-TIME DETECTION
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Internship Credit */}
-        <motion.div variants={itemVariants}>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-            padding: "14px 28px",
-            background: "rgba(0, 212, 255, 0.04)",
-            border: "1px solid rgba(0, 212, 255, 0.15)",
-            borderRadius: "12px",
-            width: "fit-content",
-            margin: "0 auto 48px auto"
-          }}>
-            <span style={{
-              fontSize: "12px",
-              color: "#8b949e",
-              fontFamily: "JetBrains Mono",
-              letterSpacing: "0.05em"
-            }}>
-              DEVELOPED DURING INTERNSHIP AT
-            </span>
-            <div style={{
-              background: "white",
-              borderRadius: "6px",
-              padding: "4px 10px",
-              display: "flex",
-              alignItems: "center"
-            }}>
-              <img
-                src={layatechLogo}
-                alt="Laya Tech"
-                style={{
-                  height: "28px",
-                  objectFit: "contain",
-                  filter: "brightness(1)",
-                  opacity: 0.9
-                }}
-              />
-            </div>
-            <span style={{
-              fontSize: "11px",
-              color: "#8b949e",
-              fontFamily: "JetBrains Mono"
-            }}>
-              2026
-            </span>
-          </div>
-        </motion.div>
+      <div className="diagonal-divider" style={{ margin: '40px -40px' }}></div>
 
-        {/* Feature Cards */}
-        <motion.div
-          variants={itemVariants}
-          className="grid md:grid-cols-3 gap-6 mb-20"
-        >
-          {/* URL Scanner */}
-          <motion.div
-            whileHover={{ borderColor: '#00d4ff', boxShadow: '0 0 20px rgba(0, 212, 255, 0.15)' }}
-            className="cyber-card p-8 border transition"
-          >
-            <Globe size={32} className="text-cyber-accent-cyan mb-4" />
-            <h3 className="font-mono text-lg font-bold mb-2">URL THREAT SCAN</h3>
-            <p className="text-cyber-text-secondary text-sm mb-4 font-mono">
-              Submit any URL for instant analysis across 90+ security engines with AI-powered
-              verdict
-            </p>
-            <Link to="/url" className="text-cyber-accent-cyan hover:text-cyber-accent-purple transition font-mono text-sm font-bold">
-              Launch Scanner →
-            </Link>
-          </motion.div>
+      {/* Feature Cards Section */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+        
+        <div className="neural-card" style={{ padding: '32px', cursor: 'pointer' }} onClick={() => navigate('/url')}>
+          <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-violet)', fontSize: '24px', marginBottom: '20px' }}>◈</div>
+          <h3 className="neural-heading" style={{ fontSize: '16px', marginBottom: '12px' }}>URL THREAT SCAN</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>Multi-layer phishing detection across 12+ intelligence sources</p>
+        </div>
 
-          {/* Email Analyzer */}
-          <motion.div
-            whileHover={{ borderColor: '#7c3aed', boxShadow: '0 0 20px rgba(124, 58, 237, 0.15)' }}
-            className="cyber-card p-8 border transition"
-          >
-            <Mail size={32} style={{ color: '#7c3aed' }} className="mb-4" />
-            <h3 className="font-mono text-lg font-bold mb-2">EMAIL PHISH DETECT</h3>
-            <p className="text-cyber-text-secondary text-sm mb-4 font-mono">
-              Paste suspicious email content for deep phishing pattern analysis and threat
-              scoring
-            </p>
-            <Link to="/email" className="transition font-mono text-sm font-bold" style={{ color: '#7c3aed' }}>
-              Launch Analyzer →
-            </Link>
-          </motion.div>
+        <div className="neural-card" style={{ padding: '32px', cursor: 'pointer', '--accent-violet': 'var(--accent-neon)' }} onClick={() => navigate('/email')}>
+          <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-neon)', fontSize: '24px', marginBottom: '20px' }}>⊠</div>
+          <h3 className="neural-heading" style={{ fontSize: '16px', marginBottom: '12px', color: 'var(--accent-neon)' }}>NEURAL EMAIL SCAN</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>AI-powered phishing pattern detection with header forensics</p>
+        </div>
 
-          {/* AI Analysis */}
-          <motion.div
-            whileHover={{ borderColor: '#00ff88', boxShadow: '0 0 20px rgba(0, 255, 136, 0.15)' }}
-            className="cyber-card p-8 border transition"
-          >
-            <Brain size={32} className="text-cyber-accent-green mb-4" />
-            <h3 className="font-mono text-lg font-bold mb-2">GEMINI AI ENGINE</h3>
-            <p className="text-cyber-text-secondary text-sm mb-4 font-mono">
-              Advanced natural language analysis identifies social engineering tactics and
-              manipulation patterns
-            </p>
-            <div className="text-cyber-accent-green font-mono text-sm font-bold">Active ✓</div>
-          </motion.div>
-        </motion.div>
+        <div className="neural-card" style={{ padding: '32px', cursor: 'pointer', '--accent-violet': 'var(--accent-ice)' }} onClick={() => navigate('/audit')}>
+          <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-ice)', fontSize: '24px', marginBottom: '20px' }}>⬡</div>
+          <h3 className="neural-heading" style={{ fontSize: '16px', marginBottom: '12px', color: 'var(--accent-ice)' }}>DEEP SITE AUDIT</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>Professional security assessment with OWASP and CVE mapping</p>
+        </div>
+      </div>
 
-        {/* Footer */}
-        <motion.div variants={itemVariants} className="text-center text-cyber-text-secondary font-mono text-sm">
-          <p>CyberLens | Built with FastAPI + React + Gemini AI</p>
-        </motion.div>
-      </motion.div>
     </div>
   )
 }

@@ -1,87 +1,44 @@
-import layatechLogo from "../assets/layatech-logo.png"
+import React from 'react'
+import logo from '../assets/layatech-logo.png'
 
 export default function Footer() {
   return (
     <footer style={{
-      borderTop: "1px solid #21262d",
-      background: "#0d1117",
-      padding: "24px 40px",
-      marginTop: "60px"
+      background: 'rgba(10, 10, 20, 0.98)',
+      borderTop: '1px solid #1a1a2e',
+      marginTop: 'auto',
+      padding: '20px 40px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      clipPath: 'polygon(0 8px, 20px 0, 100% 0, 100% 100%, 0 100%)',
+      fontFamily: 'Orbitron, sans-serif'
     }}>
-      <div style={{
-        maxWidth: "1200px",
-        margin: "0 auto",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "16px"
-      }}>
+      {/* Left: Logo Name */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ color: '#7b2fff', fontWeight: '800', fontSize: '12px', letterSpacing: '0.15em' }}>CYBER</span>
+        <span style={{ color: '#f0f0ff', fontWeight: '400', fontSize: '12px', letterSpacing: '0.1em' }}>LENS</span>
+      </div>
 
-        {/* Left — CyberLens branding */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{
-            fontFamily: "JetBrains Mono",
-            fontSize: "14px",
-            color: "#00d4ff",
-            fontWeight: "bold"
-          }}>
-            CYBER<span style={{ color: "#e6edf3" }}>LENS</span>
-          </span>
-          <span style={{ color: "#21262d" }}>|</span>
-          <span style={{
-            fontFamily: "JetBrains Mono",
-            fontSize: "11px",
-            color: "#8b949e"
-          }}>
-            AI-Powered Threat Intelligence Platform
-          </span>
-        </div>
-
-        {/* Center — Internship credit */}
+      {/* Center: Internship Credit */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <span style={{ color: '#7070a0', fontSize: '10px', letterSpacing: '0.1em' }}>DEVELOPED AT ▸</span>
         <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px"
+          background: 'rgba(255,255,255,0.05)',
+          padding: '4px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          borderLeft: '2px solid #7b2fff'
         }}>
-          <span style={{
-            fontSize: "11px",
-            color: "#8b949e",
-            fontFamily: "JetBrains Mono"
-          }}>
-            Built during internship at
-          </span>
-          <div style={{
-            background: "white",
-            borderRadius: "6px",
-            padding: "4px 10px",
-            display: "flex",
-            alignItems: "center"
-          }}>
-            <img
-              src={layatechLogo}
-              alt="Laya Tech"
-              style={{
-                height: "22px",
-                objectFit: "contain",
-                opacity: 0.85,
-                transition: "opacity 0.2s"
-              }}
-              onMouseEnter={e => e.target.style.opacity = 1}
-              onMouseLeave={e => e.target.style.opacity = 0.85}
-            />
-          </div>
+          <img src={logo} alt="Laya Tech" style={{ height: '20px', filter: 'drop-shadow(0 0 5px rgba(255,255,255,0.2))' }} />
+          <span style={{ color: '#f0f0ff', fontSize: '10px', letterSpacing: '0.1em' }}>▸ CYBERSECURITY INTERNSHIP 2026</span>
         </div>
+      </div>
 
-        {/* Right — copyright */}
-        <div style={{
-          fontFamily: "JetBrains Mono",
-          fontSize: "11px",
-          color: "#8b949e"
-        }}>
-          © 2026 CyberLens. All rights reserved.
-        </div>
-
+      {/* Right: Copyright/Status */}
+      <div style={{ color: '#404060', fontSize: '10px', letterSpacing: '0.1em' }}>
+        © 2026 — ALL SYSTEMS OPERATIONAL
       </div>
     </footer>
   )

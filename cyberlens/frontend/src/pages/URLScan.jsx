@@ -1,35 +1,47 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { motion } from 'framer-motion'
-import { Globe, AlertTriangle, CheckCircle, BarChart3, AlertOctagon, Image as ImageIcon } from 'lucide-react'
-import ScanInput from '../components/ScanInput'
-import ThreatGauge from '../components/ThreatGauge'
-import ResultCard from '../components/ResultCard'
-import IndicatorList from '../components/IndicatorList'
-import ScanHistory from '../components/ScanHistory'
 
 const API_BASE = 'http://127.0.0.1:8000/api'
 
 export default function URLScan() {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const [scanStatus, setScanStatus] = useState('Querying VirusTotal...')
   const [result, setResult] = useState(null)
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem('urlHistory')
     return saved ? JSON.parse(saved) : []
   })
 
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      const statuses = [
+        'Querying VirusTotal...',
+        'Checking Safe Browsing...',
+        'Running Pattern Analysis...',
+        'Analyzing DNS...'
+      ]
+      let i = 0
+      interval = setInterval(() => {
+        i = (i + 1) % statuses.length
+        setScanStatus(statuses[i])
+      }, 2000)
+    }
+    return () => clearInterval(interval)
+  }, [loading])
+
   const scanURL = async () => {
     if (!url.trim()) return
 
     setLoading(true)
+    setResult(null)
     try {
       const response = await axios.post(`${API_BASE}/scan/url`, { url })
       const data = response.data
 
       setResult(data)
 
-      // Save to history
       const historyItem = {
         url: data.url,
         threat_level: data.threat_level,
@@ -45,317 +57,320 @@ export default function URLScan() {
     setLoading(false)
   }
 
-  const handleHistorySelect = (item) => {
-    setUrl(item.url)
+  const getScoreColor = (score) => {
+    if (score <= 20) return 'var(--accent-neon)'
+    if (score <= 65) return 'var(--accent-amber)'
+    return 'var(--accent-crimson)'
   }
 
-  const clearHistory = () => {
-    setHistory([])
-    localStorage.removeItem('urlHistory')
+  const getLevelClass = (level) => {
+    const l = (level || '').toLowerCase()
+    if (l.includes('safe')) return 'hex-safe'
+    if (l.includes('low')) return 'hex-low'
+    if (l.includes('medium')) return 'hex-medium'
+    if (l.includes('high')) return 'hex-high'
+    if (l.includes('critical')) return 'hex-critical'
+    return 'hex-safe'
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-cyber-bg-primary">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Page Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <h1 className="font-mono text-4xl font-bold mb-2 flex items-center gap-3">
-            <Globe className="text-cyber-accent-cyan" />
-            <span className="text-gradient">&gt; URL_THREAT_SCANNER</span>
-          </h1>
-          <p className="text-cyber-text-secondary font-mono">
-            Analyze any URL against 90+ security engines
-          </p>
-        </motion.div>
+    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      
+      {/* HEADER SECTION */}
+      <div>
+        <div className="section-label" style={{ marginBottom: '16px' }}>◈ THREAT INTELLIGENCE</div>
+        <h1 className="neural-heading" style={{ fontSize: '48px', color: 'var(--accent-violet)', marginBottom: '8px' }}>URL SCANNER</h1>
+        <div style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-secondary)', fontSize: '14px' }}>
+          $ target_analysis --mode=deep --engines=12
+        </div>
+      </div>
 
-        {/* Scan Input */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 20 }} className="mb-8">
-          <ScanInput
-            url={url}
-            setUrl={setUrl}
-            onScan={scanURL}
-            loading={loading}
-            placeholder="https://suspicious-site.com"
-          />
-        </motion.div>
+      {/* INPUT SECTION */}
+      <div className="neural-card" style={{ padding: '32px' }}>
+        <div className="section-label" style={{ marginBottom: '16px' }}>TARGET URL</div>
+        <input 
+          type="text" 
+          className="neural-input" 
+          placeholder="https://target-domain.com" 
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          disabled={loading}
+          onKeyDown={e => e.key === 'Enter' && scanURL()}
+        />
+        
+        <div style={{ display: 'flex', gap: '16px', marginTop: '16px', marginBottom: '32px' }}>
+          <button style={{ background: 'var(--bg-layer2)', border: '1px solid var(--accent-violet)', color: 'var(--text-primary)', padding: '6px 12px', fontSize: '10px', fontFamily: 'Orbitron', clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}>ALL ENGINES</button>
+          <button style={{ background: 'transparent', border: '1px solid var(--border-dim)', color: 'var(--text-secondary)', padding: '6px 12px', fontSize: '10px', fontFamily: 'Orbitron', clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}>FAST SCAN</button>
+          <button style={{ background: 'transparent', border: '1px solid var(--border-dim)', color: 'var(--text-secondary)', padding: '6px 12px', fontSize: '10px', fontFamily: 'Orbitron', clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}>DEEP SCAN</button>
+        </div>
 
-        {/* Results */}
-        {result && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 mb-12">
-            {/* Threat Score */}
-              {/* Critical banner */}
-              {result.threat_score >= 70 && (
-                <div className="w-full mb-4 p-4 rounded text-white font-bold text-center" style={{ background: '#ff0040', boxShadow: '0 0 12px #ff0040' }}>
-                  ⚠ CRITICAL THREAT DETECTED — Do not visit this URL
-                </div>
-              )}
-              <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex justify-center">
-                <ThreatGauge score={result.threat_score} level={result.threat_level} />
+        <button className="btn-scan" onClick={scanURL} disabled={loading} style={{ width: '100%' }}>
+          {loading ? 'INITIALIZING...' : 'INITIATE SCAN'}
+        </button>
+
+        {loading && (
+          <div className="scanning-overlay" style={{ marginTop: '32px', padding: '40px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', borderTop: '1px solid var(--border-dim)' }}>
+            <div className="scan-beam"></div>
+            
+            {/* Hexagonal Loading Animation */}
+            <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+              <svg viewBox="0 0 100 100" style={{ position: 'absolute', inset: 0, animation: 'border-rotate 4s linear infinite' }}>
+                <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" fill="none" stroke="url(#hexGradient)" strokeWidth="2" />
+                <defs>
+                  <linearGradient id="hexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="var(--accent-violet)" />
+                    <stop offset="50%" stopColor="var(--accent-neon)" />
+                    <stop offset="100%" stopColor="transparent" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <svg viewBox="0 0 100 100" style={{ position: 'absolute', inset: 15, animation: 'border-rotate 3s linear infinite reverse' }}>
+                <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" fill="none" stroke="rgba(123, 47, 255, 0.3)" strokeWidth="1" strokeDasharray="5,5" />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--accent-violet)', animation: 'blink-text 1s infinite' }}>SCAN</span>
               </div>
+            </div>
+            
+            <div style={{ fontFamily: 'Share Tech Mono', color: 'var(--accent-ice)', fontSize: '14px' }}>
+              {scanStatus}
+            </div>
+          </div>
+        )}
+      </div>
 
-              <div className="space-y-4">
-                {/* Threat Analysis */}
-                <ResultCard title="THREAT ANALYSIS" icon={AlertTriangle} accentColor="#ff0040">
-                  <IndicatorList indicators={result.reasons} />
-                </ResultCard>
+      {/* RESULTS SECTION */}
+      {result && !loading && (
+        <div className="fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+          
+          {/* TOP ROW STATS */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+            <div className="stat-card">
+              <div className="section-label" style={{ marginBottom: '12px' }}>THREAT SCORE</div>
+              <div style={{ fontSize: '36px', fontFamily: 'Share Tech Mono', color: getScoreColor(result.threat_score) }}>
+                {result.threat_score}<span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>/100</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="section-label" style={{ marginBottom: '12px' }}>THREAT LEVEL</div>
+              <div className={`hex-badge ${getLevelClass(result.threat_level)}`} style={{ marginTop: '8px', fontSize: '14px', padding: '12px 24px' }}>
+                {result.threat_level}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="section-label" style={{ marginBottom: '12px' }}>ENGINES CHECKED</div>
+              <div style={{ fontSize: '36px', fontFamily: 'Share Tech Mono', color: 'var(--accent-ice)' }}>
+                12<span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>+</span>
+              </div>
+            </div>
+          </div>
+
+          {/* MAIN GRID */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '32px' }}>
+            
+            {/* SVG Score Ring */}
+            <div className="neural-card" style={{ padding: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '24px' }}>
+              <div className="section-label" style={{ alignSelf: 'flex-start', width: '100%' }}>OVERALL RISK</div>
+              
+              <div className="score-ring-container" style={{ width: '200px', height: '200px' }}>
+                <svg width="200" height="200" viewBox="0 0 200 200">
+                  {/* Background track */}
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="var(--bg-layer3)" strokeWidth="12" />
+                  {/* Score arc */}
+                  <circle 
+                    cx="100" cy="100" r="80" 
+                    fill="none" 
+                    stroke={getScoreColor(result.threat_score)} 
+                    strokeWidth="12" 
+                    strokeDasharray={`${(result.threat_score / 100) * 502.6} 502.6`}
+                    strokeLinecap="round"
+                    transform="rotate(-90 100 100)"
+                    style={{ transition: 'stroke-dasharray 1s ease-out, stroke 1s ease' }}
+                  />
+                  {/* Inner decorative dashed ring */}
+                  <circle cx="100" cy="100" r="65" fill="none" stroke="var(--border-dim)" strokeWidth="1" strokeDasharray="4 4" />
+                </svg>
+                <div className="score-value" style={{ color: getScoreColor(result.threat_score) }}>{result.threat_score}</div>
+                <div className="score-label">SCORE</div>
               </div>
             </div>
 
-            {/* Intelligence Sources */}
-            <ResultCard title="INTELLIGENCE SOURCES" icon={BarChart3} accentColor="#7c3aed">
-              <div className="grid grid-cols-5 gap-4 text-center font-mono text-sm">
-                {(() => {
-                  const sources = []
-                  // VirusTotal
-                  const vtFlag = result.virustotal && result.virustotal.total_engines > 0
-                  sources.push({
-                    name: 'VirusTotal',
-                    status: vtFlag ? (result.virustotal.malicious > 0 ? 'flagged' : 'clean') : 'unknown',
-                    score: vtFlag ? `${result.virustotal.malicious}/${result.virustotal.total_engines}` : '--'
-                  })
-                  // Safe Browsing
-                  sources.push({
-                    name: 'Safe Browsing',
-                    status: result.safe_browsing && result.safe_browsing.is_threat ? 'flagged' : 'clean',
-                    score: result.safe_browsing && result.safe_browsing.is_threat ? result.safe_browsing.threat_types.join(', ') : '--'
-                  })
-                  // Pattern AI
-                  sources.push({
-                    name: 'Pattern AI',
-                    status: result.pattern_analysis && result.pattern_analysis.flags_count > 0 ? 'flagged' : 'clean',
-                    score: result.pattern_analysis ? `${result.pattern_analysis.pattern_score}` : '--'
-                  })
-                  // DNS Check
-                  sources.push({
-                    name: 'DNS Check',
-                    status: result.dns_analysis && !result.dns_analysis.resolved ? 'flagged' : (result.dns_analysis && result.dns_analysis.dns_score > 20 ? 'flagged' : 'clean'),
-                    score: result.dns_analysis ? `${result.dns_analysis.dns_score}` : '--'
-                  })
-                  // Domain Analysis
-                  sources.push({
-                    name: 'Domain Analysis',
-                    status: result.domain_analysis && result.domain_analysis.heuristic_score > 20 ? 'flagged' : 'clean',
-                    score: result.domain_analysis ? `${result.domain_analysis.heuristic_score}` : '--'
-                  })
-                  // IPQualityScore
-                  const ipqs = result.ipqs || { available: false }
-                  let ipqs_status = 'unknown'
-                  let ipqs_score = '--'
-                  if (ipqs.available === false) {
-                    ipqs_status = 'unknown'
-                    ipqs_score = 'API unavailable'
-                  } else if (ipqs) {
-                    const rs = ipqs.risk_score || 0
-                    ipqs_status = (ipqs.phishing || ipqs.suspicious || rs > 70) ? 'flagged' : 'clean'
-                    ipqs_score = `${rs}/100`
-                  }
-                  sources.push({
-                    name: 'IPQualityScore',
-                    status: ipqs_status,
-                    score: ipqs_score
-                  })
-                  // PhishTank
-                  const pt = result.phishtank || { available: false }
-                  let pt_status = 'unknown'
-                  let pt_score = '--'
-                  if (pt.available === false) {
-                    pt_status = 'unknown'
-                    pt_score = 'Unavailable'
-                  } else {
-                    pt_status = pt.in_database ? 'flagged' : 'clean'
-                    pt_score = pt.in_database && pt.phish_id ? `⚠ IN DATABASE (id:${pt.phish_id})` : 'Not listed'
-                  }
-                  sources.push({ name: 'PhishTank', status: pt_status, score: pt_score })
-                  // SSL Certificate
-                  const ssl = result.ssl_analysis || { available: false }
-                  let ssl_status = 'unknown'
-                  let ssl_score = '--'
-                  if (ssl.available === false) {
-                    ssl_status = 'unknown'
-                    ssl_score = 'Check failed'
-                  } else {
-                    ssl_status = ssl.valid === false ? 'flagged' : 'clean'
-                    ssl_score = ssl.flags && ssl.flags.length > 0 ? ssl.flags[0] : `${ssl.ssl_score || '--'}`
-                  }
-                  sources.push({ name: 'SSL Certificate', status: ssl_status, score: ssl_score })
-                  // Redirect Chain
-                  sources.push({
-                    name: 'Redirect Chain',
-                    status: result.redirect_analysis && result.redirect_analysis.redirect_count > 0 && result.redirect_analysis.redirect_score > 20 ? 'flagged' : (result.redirect_analysis ? 'clean' : 'unknown'),
-                    score: result.redirect_analysis ? `${result.redirect_analysis.redirect_count}` : '--'
-                  })
-                  // URLScan
-                  const us = result.urlscan || { available: false }
-                  let us_status = 'unknown'
-                  let us_score = '--'
-                  if (us.available === false) {
-                    us_status = 'unknown'
-                    us_score = 'Unavailable'
-                  } else {
-                    us_status = us.malicious ? 'flagged' : 'clean'
-                    us_score = us.malicious ? 'MALICIOUS' : (us.score !== undefined ? `${us.score}` : 'Clean')
-                  }
-                  sources.push({ name: 'URLScan.io', status: us_status, score: us_score })
-
-                  // Confidence
-                  const available = [
-                    !!result.virustotal, !!result.safe_browsing, !!result.pattern_analysis,
-                    !!result.dns_analysis, !!result.domain_analysis, !!result.ipqs, !!result.phishtank, !!result.ssl_analysis, !!result.redirect_analysis, !!result.urlscan
-                  ].filter(Boolean).length
-                  let confidence = 'LOW'
-                  if (available >= 5) confidence = 'HIGH'
-                  else if (available >= 3) confidence = 'MEDIUM'
-
-                  return (
-                    <>
-                      {sources.map((s, i) => (
-                        <div key={i} className="p-3 bg-cyber-bg-tertiary rounded">
-                          <div className="font-bold mb-1">{s.name}</div>
-                          <div>
-                            {s.status === 'clean' && <CheckCircle className="text-cyber-accent-green inline-block" />}
-                            {s.status === 'flagged' && <AlertTriangle className="text-cyber-accent-red inline-block" />}
-                            {s.status === 'unknown' && <div className="inline-block text-cyber-text-secondary">—</div>}
-                          </div>
-                          <div className="text-xs text-cyber-text-secondary mt-2">{s.score}</div>
-                        </div>
-                      ))}
-                      <div className="col-span-5 mt-2 text-center">
-                        <div className="font-mono text-xs text-cyber-text-secondary">Detection Confidence</div>
-                        <div className="font-bold">{confidence}</div>
-                      </div>
-                    </>
-                  )
-                })()}
-              </div>
-            </ResultCard>
-
-            {/* AI Assessment */}
-            <ResultCard
-              title="AI ASSESSMENT"
-              icon={Globe}
-              accentColor="#00d4ff"
-            >
-              <p className="text-cyber-text-secondary font-mono leading-relaxed">
-                {result.ai_explanation}
-              </p>
-            </ResultCard>
-
-            {/* Detection Breakdown */}
-            <ResultCard
-              title="DETECTION BREAKDOWN"
-              icon={BarChart3}
-              accentColor="#7c3aed"
-            >
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* VirusTotal */}
-                <div className="bg-cyber-bg-tertiary p-4 rounded">
-                  <div className="font-mono text-sm text-cyber-text-secondary mb-3">VirusTotal</div>
-                  <div className="text-2xl font-bold mb-3">
-                    {result.virustotal.malicious}/{result.virustotal.total_engines}
-                  </div>
-                  <div className="font-mono text-xs text-cyber-text-secondary mb-3">
-                    Malicious engines detected
-                  </div>
-                  <div className="w-full bg-cyber-bg-secondary rounded h-2">
-                    <div
-                      className="bg-cyber-accent-red h-2 rounded"
-                      style={{
-                        width: `${
-                          result.virustotal.total_engines > 0
-                            ? (result.virustotal.malicious / result.virustotal.total_engines) * 100
-                            : 0
-                        }%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Safe Browsing */}
-                <div className="bg-cyber-bg-tertiary p-4 rounded">
-                  <div className="font-mono text-sm text-cyber-text-secondary mb-3">Google Safe Browsing</div>
-                  <div className="flex items-center gap-3">
-                    {result.safe_browsing.is_threat ? (
-                      <>
-                        <AlertTriangle size={32} className="text-cyber-accent-red" />
-                        <div>
-                          <div className="font-bold text-cyber-accent-red">THREAT DETECTED</div>
-                          <div className="font-mono text-xs text-cyber-text-secondary">
-                            {result.safe_browsing.threat_types.join(', ')}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle size={32} className="text-cyber-accent-green" />
-                        <div>
-                          <div className="font-bold text-cyber-accent-green">CLEAN</div>
-                          <div className="font-mono text-xs text-cyber-text-secondary">No threats detected</div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </ResultCard>
-
-            {/* URL Details */}
-            <ResultCard title="URL DETAILS" icon={Globe} accentColor="#00ff88">
-              <div className="space-y-3 font-mono text-sm">
-                <div>
-                  <span className="text-cyber-text-secondary">Full URL: </span>
-                  <span className="text-cyber-accent-cyan break-all">{result.url}</span>
-                </div>
-                {result.virustotal.title && (
-                  <div>
-                    <span className="text-cyber-text-secondary">Title: </span>
-                    <span>{result.virustotal.title}</span>
+            {/* Threat Matrix */}
+            <div className="neural-card" style={{ padding: '32px' }}>
+              <div className="section-label" style={{ marginBottom: '24px' }}>THREAT MATRIX</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {result.reasons && result.reasons.length > 0 ? (
+                  result.reasons.map((reason, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'Share Tech Mono', fontSize: '14px', background: 'var(--bg-layer2)', padding: '12px 16px', borderLeft: '2px solid var(--accent-amber)' }}>
+                      <span style={{ color: 'var(--accent-amber)' }}>▸</span>
+                      <span style={{ color: 'var(--text-primary)' }}>{reason}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'Share Tech Mono', fontSize: '14px', background: 'var(--bg-layer2)', padding: '12px 16px', borderLeft: '2px solid var(--accent-neon)' }}>
+                    <span style={{ color: 'var(--accent-neon)' }}>▸</span>
+                    <span style={{ color: 'var(--accent-neon)' }}>No significant threats detected in standard matrix.</span>
                   </div>
                 )}
-                <div>
-                  <span className="text-cyber-text-secondary">Scanned: </span>
-                  <span>{new Date(result.timestamp).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Assessment */}
+          <div style={{ background: 'var(--bg-layer2)', border: '1px solid var(--border-dim)', borderLeft: '4px solid var(--accent-violet)', padding: '32px', position: 'relative' }}>
+            <div className="section-label" style={{ marginBottom: '16px' }}>NEURAL ASSESSMENT</div>
+            <p style={{ fontFamily: 'Exo 2', fontSize: '15px', lineHeight: '1.8', color: 'var(--text-primary)' }}>
+              {result.ai_explanation}
+            </p>
+          </div>
+
+          {/* Pattern Analysis */}
+          {result.pattern_analysis && result.pattern_analysis.flags_count > 0 && (
+            <div className="neon-card" style={{ padding: '32px' }}>
+              <div className="section-label" style={{ marginBottom: '24px', color: 'var(--accent-crimson)' }}>PATTERN ANALYSIS DETECTIONS</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {result.pattern_analysis.flags.map((flag, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-layer2)', padding: '12px 16px', border: '1px solid rgba(255, 23, 68, 0.2)' }}>
+                    <div style={{ fontFamily: 'Share Tech Mono', fontSize: '14px', color: 'var(--text-primary)', display: 'flex', gap: '12px' }}>
+                      <span style={{ color: 'var(--accent-crimson)' }}>▸</span>
+                      {flag}
+                    </div>
+                    <div className="hex-badge hex-critical" style={{ fontSize: '9px', padding: '4px 12px' }}>FLAGGED</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Intelligence Sources */}
+          <div>
+            <div className="section-label" style={{ marginBottom: '24px' }}>INTELLIGENCE SOURCES</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
+              
+              {/* VT */}
+              <div className={`intel-source ${(result.virustotal && result.virustotal.malicious > 0) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>VIRUSTOTAL</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.virustotal ? `${result.virustotal.malicious}/${result.virustotal.total_engines}` : '--'}
                 </div>
               </div>
-            </ResultCard>
 
-            {/* Pattern Analysis */}
-            {result.pattern_analysis && result.pattern_analysis.flags_count > 0 && (
-              <ResultCard title="PATTERN ANALYSIS" icon={AlertOctagon} accentColor="#ff6b00">
-                <div className="space-y-2 font-mono text-sm">
-                  {result.pattern_analysis.flags.map((f, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <AlertOctagon className="text-cyber-accent-red mt-1" />
-                      <div>{f}</div>
-                    </div>
-                  ))}
+              {/* Safe Browsing */}
+              <div className={`intel-source ${(result.safe_browsing && result.safe_browsing.is_threat) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>SAFE BROWSING</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '12px', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+                  {result.safe_browsing && result.safe_browsing.is_threat ? 'THREAT FOUND' : 'CLEAN'}
                 </div>
-              </ResultCard>
-            )}
+              </div>
 
-            {/* URLScan Screenshot */}
-            {result.urlscan && result.urlscan.screenshot_url && (
-              <ResultCard title="SITE SCREENSHOT" icon={ImageIcon} accentColor="#00d4ff">
-                <div className="space-y-3">
-                  <img src={result.urlscan.screenshot_url} alt="site screenshot" className="w-full rounded shadow-md" />
-                  <div className="text-sm font-mono text-cyber-text-secondary">
-                    <a href={result.urlscan.result_url} target="_blank" rel="noreferrer" className="text-cyber-accent-cyan underline">
-                      View full URLScan report
-                    </a>
-                  </div>
+              {/* URLScan */}
+              <div className={`intel-source ${(result.urlscan && result.urlscan.malicious) ? 'flagged' : (result.urlscan && result.urlscan.available !== false ? 'clean' : 'unavailable')}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>URLSCAN.IO</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '14px', color: 'var(--text-primary)' }}>
+                  {result.urlscan && result.urlscan.malicious ? 'MALICIOUS' : (result.urlscan && result.urlscan.score !== undefined ? `SCORE: ${result.urlscan.score}` : 'CLEAN')}
                 </div>
-              </ResultCard>
-            )}
-          </motion.div>
-        )}
+              </div>
 
-        {/* Scan History */}
-        <ScanHistory history={history} onSelect={handleHistorySelect} onClear={clearHistory} />
-      </div>
+              {/* PhishTank */}
+              <div className={`intel-source ${(result.phishtank && result.phishtank.in_database) ? 'flagged' : (result.phishtank && result.phishtank.available !== false ? 'clean' : 'unavailable')}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>PHISHTANK</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '12px', color: 'var(--text-primary)' }}>
+                  {result.phishtank && result.phishtank.in_database ? `ID:${result.phishtank.phish_id}` : 'NOT LISTED'}
+                </div>
+              </div>
+
+              {/* IPQS */}
+              <div className={`intel-source ${(result.ipqs && (result.ipqs.phishing || result.ipqs.suspicious || result.ipqs.risk_score > 70)) ? 'flagged' : (result.ipqs && result.ipqs.available !== false ? 'clean' : 'unavailable')}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>IP QUALITY SCORE</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.ipqs && result.ipqs.risk_score !== undefined ? `${result.ipqs.risk_score}/100` : '--'}
+                </div>
+              </div>
+
+              {/* DNS */}
+              <div className={`intel-source ${(result.dns_analysis && (!result.dns_analysis.resolved || result.dns_analysis.dns_score > 20)) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>DNS ANALYSIS</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.dns_analysis ? `${result.dns_analysis.dns_score} PTS` : '--'}
+                </div>
+              </div>
+
+              {/* SSL */}
+              <div className={`intel-source ${(result.ssl_analysis && result.ssl_analysis.valid === false) ? 'flagged' : (result.ssl_analysis && result.ssl_analysis.available !== false ? 'clean' : 'unavailable')}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>SSL CERTIFICATE</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '12px', color: 'var(--text-primary)' }}>
+                  {result.ssl_analysis && result.ssl_analysis.valid === false ? 'INVALID' : 'VALID'}
+                </div>
+              </div>
+
+              {/* Domain */}
+              <div className={`intel-source ${(result.domain_analysis && result.domain_analysis.heuristic_score > 20) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>DOMAIN AGE</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.domain_analysis ? `${result.domain_analysis.heuristic_score} PTS` : '--'}
+                </div>
+              </div>
+
+              {/* Redirects */}
+              <div className={`intel-source ${(result.redirect_analysis && result.redirect_analysis.redirect_score > 20) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>REDIRECT CHAIN</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.redirect_analysis ? `${result.redirect_analysis.redirect_count} HOPS` : '--'}
+                </div>
+              </div>
+
+              {/* Pattern */}
+              <div className={`intel-source ${(result.pattern_analysis && result.pattern_analysis.flags_count > 0) ? 'flagged' : 'clean'}`}>
+                <div style={{ fontFamily: 'Orbitron', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '12px' }}>PATTERN AI</div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '18px', color: 'var(--text-primary)' }}>
+                  {result.pattern_analysis ? `${result.pattern_analysis.pattern_score} PTS` : '--'}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SCAN HISTORY */}
+      {history.length > 0 && (
+        <div style={{ marginTop: '40px' }}>
+          <div className="section-label" style={{ marginBottom: '24px' }}>PREVIOUS TARGETS</div>
+          <div style={{ background: 'var(--bg-layer1)', border: '1px solid var(--border-dim)' }}>
+            {history.map((item, idx) => (
+              <div key={idx} style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr auto auto', 
+                gap: '24px', 
+                padding: '16px 24px', 
+                borderBottom: idx < history.length - 1 ? '1px solid var(--border-dim)' : 'none',
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'background 0.3s'
+              }}
+              className="glitch-hover"
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-layer2)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              onClick={() => setUrl(item.url)}
+              >
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '14px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {item.url}
+                </div>
+                <div className={`hex-badge ${getLevelClass(item.threat_level)}`} style={{ padding: '4px 12px', fontSize: '9px' }}>
+                  {item.threat_level}
+                </div>
+                <div style={{ fontFamily: 'Share Tech Mono', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  {item.timestamp}
+                </div>
+              </div>
+            ))}
+          </div>
+          <button style={{ marginTop: '16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontFamily: 'Orbitron', fontSize: '10px', letterSpacing: '0.1em', cursor: 'pointer' }} onClick={() => { setHistory([]); localStorage.removeItem('urlHistory'); }}>
+            [ CLEAR SYSTEM LOG ]
+          </button>
+        </div>
+      )}
+
     </div>
   )
 }

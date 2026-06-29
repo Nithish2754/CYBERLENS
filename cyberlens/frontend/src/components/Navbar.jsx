@@ -1,73 +1,95 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Shield } from 'lucide-react'
 
 export default function Navbar() {
   const location = useLocation()
-
-  const isActive = (path) => location.pathname === path
+  const navLinks = [
+    { path: '/', label: 'HOME' },
+    { path: '/url', label: 'SCAN-URL' },
+    { path: '/email', label: 'SCAN-EMAIL' },
+    { path: '/audit', label: 'AUDIT' },
+  ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 cyber-border bg-cyber-bg-primary/95 backdrop-blur-sm border-b border-cyber-border">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <Shield className="w-6 h-6 text-cyber-accent-cyan group-hover:text-cyber-accent-purple transition" />
-          <span className="font-mono text-lg font-bold">
-            <span className="text-gradient">CYBER</span>
-            <span className="text-cyber-accent-cyan">LENS</span>
-          </span>
-        </Link>
-
-        {/* Navigation Links */}
-        <div className="flex items-center gap-8">
-          <Link
-            to="/"
-            className={`font-mono text-sm transition ${
-              isActive('/') 
-                ? 'text-cyber-accent-cyan border-b-2 border-cyber-accent-cyan' 
-                : 'text-cyber-text-secondary hover:text-cyber-accent-cyan'
-            }`}
-          >
-            [~/ home]
-          </Link>
-          <Link
-            to="/url"
-            className={`font-mono text-sm transition ${
-              isActive('/url') 
-                ? 'text-cyber-accent-cyan border-b-2 border-cyber-accent-cyan' 
-                : 'text-cyber-text-secondary hover:text-cyber-accent-cyan'
-            }`}
-          >
-            [~/ scan-url]
-          </Link>
-          <Link
-            to="/email"
-            className={`font-mono text-sm transition ${
-              isActive('/email') 
-                ? 'text-cyber-accent-cyan border-b-2 border-cyber-accent-cyan' 
-                : 'text-cyber-text-secondary hover:text-cyber-accent-cyan'
-            }`}
-          >
-            [~/ scan-email]
-          </Link>
-          <Link
-            to="/audit"
-            className={`font-mono text-sm transition ${
-              isActive('/audit') 
-                ? 'text-cyber-accent-cyan border-b-2 border-cyber-accent-cyan' 
-                : 'text-cyber-text-secondary hover:text-cyber-accent-cyan'
-            }`}
-          >
-            [~/ audit]
-          </Link>
+    <nav style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0,
+      zIndex: 1000,
+      background: 'rgba(5, 5, 8, 0.92)',
+      backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid #1a1a2e',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 32px',
+      justifyContent: 'space-between'
+    }}>
+      {/* Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Hexagon logo mark */}
+        <div style={{
+          width: '32px',
+          height: '32px',
+          background: 'linear-gradient(135deg, #7b2fff, #5500cc)',
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 15px rgba(123, 47, 255, 0.5)'
+        }}>
+          <span style={{ color: 'white', fontSize: '14px', fontWeight: '900', fontFamily: 'Orbitron' }}>C</span>
         </div>
-
-        {/* Status indicator */}
-        <div className="flex items-center gap-2 text-cyber-accent-green text-sm font-mono">
-          <span className="w-2 h-2 bg-cyber-accent-green rounded-full animate-pulse"></span>
-          SYSTEM ONLINE
+        <div>
+          <span style={{
+            fontFamily: 'Orbitron',
+            fontWeight: '800',
+            fontSize: '16px',
+            letterSpacing: '0.15em',
+            color: '#7b2fff'
+          }}>CYBER</span>
+          <span style={{
+            fontFamily: 'Orbitron',
+            fontWeight: '400',
+            fontSize: '16px',
+            letterSpacing: '0.1em',
+            color: '#f0f0ff'
+          }}>LENS</span>
         </div>
+      </div>
+
+      {/* Nav links */}
+      <div style={{ display: 'flex', gap: '4px' }}>
+        {navLinks.map(link => {
+          const active = location.pathname === link.path
+          return (
+            <Link key={link.path} to={link.path} style={{
+              fontFamily: 'Orbitron',
+              fontSize: '10px',
+              fontWeight: '600',
+              letterSpacing: '0.15em',
+              padding: '8px 16px',
+              color: active ? '#7b2fff' : '#7070a0',
+              textDecoration: 'none',
+              borderBottom: active ? '2px solid #7b2fff' : '2px solid transparent',
+              transition: 'all 0.3s',
+              position: 'relative'
+            }}
+            onMouseEnter={e => { if (!active) { e.target.style.color = '#f0f0ff'; e.target.style.borderBottomColor = '#7b2fff60'; }}}
+            onMouseLeave={e => { if (!active) { e.target.style.color = '#7070a0'; e.target.style.borderBottomColor = 'transparent'; }}}
+            >
+              {link.label}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Status */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span className="node-online"></span>
+        <span style={{
+          fontFamily: 'Orbitron',
+          fontSize: '9px',
+          letterSpacing: '0.2em',
+          color: '#39ff14'
+        }}>NEURAL NET ONLINE</span>
       </div>
     </nav>
   )
