@@ -1,4 +1,4 @@
-# PhishGuard Setup Guide
+# CyberLens Setup Guide
 
 ## 🔑 Step 1: Get API Keys (5 minutes)
 
@@ -30,7 +30,7 @@ On Windows: Press `Win+R`, type `powershell`, press Enter
 
 ### 2.2 Navigate to Backend
 ```powershell
-cd "C:\Users\nithishraju\Desktop\cyber project\phishguard\backend"
+cd "C:\Users\nithishraju\Desktop\cyber project\cyberlens\backend"
 ```
 
 ### 2.3 Create Virtual Environment
@@ -77,7 +77,7 @@ Press `Ctrl+Shift+P` → "Terminal: Create New Terminal" (or open new window)
 
 ### 3.2 Navigate to Frontend
 ```powershell
-cd "C:\Users\nithishraju\Desktop\cyber project\phishguard\frontend"
+cd "C:\Users\nithishraju\Desktop\cyber project\cyberlens\frontend"
 ```
 
 ### 3.3 Install Dependencies
@@ -107,7 +107,7 @@ VITE v5.3.3  ready in 234 ms
 
 Open your browser to: **http://localhost:5173**
 
-You should see the PhishGuard home page with:
+You should see the CyberLens home page with:
 - Logo and title
 - Two buttons: "SCAN URL" and "ANALYZE EMAIL"
 - Feature cards explaining the tool

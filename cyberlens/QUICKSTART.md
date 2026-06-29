@@ -1,6 +1,6 @@
 # 🚀 Quick Start Checklist
 
-Use this checklist to set up and run PhishGuard.
+Use this checklist to set up and run CyberLens.
 
 ## ✅ Pre-Setup (Get API Keys - 10 minutes)
 
@@ -24,7 +24,7 @@ Use this checklist to set up and run PhishGuard.
 
 ```powershell
 # 1. Navigate to backend
-cd "C:\Users\nithishraju\Desktop\cyber project\phishguard\backend"
+cd "C:\Users\nithishraju\Desktop\cyber project\cyberlens\backend"
 
 # 2. Create virtual environment
 python -m venv venv
@@ -53,7 +53,7 @@ Open a **new terminal window** and run:
 
 ```powershell
 # 1. Navigate to frontend
-cd "C:\Users\nithishraju\Desktop\cyber project\phishguard\frontend"
+cd "C:\Users\nithishraju\Desktop\cyber project\cyberlens\frontend"
 
 # 2. Install dependencies
 npm install

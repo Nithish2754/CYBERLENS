@@ -18,7 +18,7 @@ export default function Footer() {
         gap: "16px"
       }}>
 
-        {/* Left — PhishGuard branding */}
+        {/* Left — CyberLens branding */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span style={{
             fontFamily: "JetBrains Mono",

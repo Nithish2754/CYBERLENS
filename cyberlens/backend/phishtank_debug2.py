@@ -4,7 +4,7 @@ import httpx
 app_key = os.getenv('PHISHTANK_API_KEY', '')
 print('APP_KEY LEN', len(app_key))
 headers = {
-    'User-Agent': 'PhishGuard/1.0 (+https://github.com)',
+    'User-Agent': 'CyberLens/1.0 (+https://github.com)',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
     'Accept-Language': 'en-US,en;q=0.9',
     'Referer': 'https://phishtank.org/',

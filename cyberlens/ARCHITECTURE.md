@@ -1,4 +1,4 @@
-# PhishGuard — Architecture & Implementation Guide
+# CyberLens — Architecture & Implementation Guide
 
 ## 🏗️ System Architecture
 
@@ -518,4 +518,4 @@ test('displays green gauge for safe URL', async () => {
 
 ---
 
-**PhishGuard Architecture Summary**: A distributed, async-first system with clear separation between threat intelligence services, threat scoring logic, and UI presentation. Highly scalable and maintainable.
+**CyberLens Architecture Summary**: A distributed, async-first system with clear separation between threat intelligence services, threat scoring logic, and UI presentation. Highly scalable and maintainable.

@@ -1,4 +1,4 @@
-# PhishGuard — AI-Powered Cybersecurity Threat Analyzer
+# CyberLens — AI-Powered Cybersecurity Threat Analyzer
 
 A full-stack cybersecurity web application for detecting and analyzing phishing threats in URLs and emails.
 
@@ -164,7 +164,7 @@ Enter your password and credit card to restore access.
 ## 📁 Project Structure
 
 ```
-phishguard/
+cyberlens/
 ├── backend/
 │   ├── main.py
 │   ├── config.py

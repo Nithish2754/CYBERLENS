@@ -5,7 +5,7 @@ app_key = os.getenv('PHISHTANK_API_KEY', '')
 print('APP_KEY LEN', len(app_key))
 for url in ['http://checkurl.phishtank.com/checkurl/', 'https://checkurl.phishtank.com/checkurl/']:
     headers = {
-        'User-Agent': 'PhishGuard/1.0 (https://github.com)',
+        'User-Agent': 'CyberLens/1.0 (https://github.com)',
         'Accept': 'application/json',
         'Referer': 'https://phishtank.org/',
         'Content-Type': 'application/x-www-form-urlencoded'

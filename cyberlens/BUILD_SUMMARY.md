@@ -1,8 +1,8 @@
-# PhishGuard Project — Complete Build Summary
+# CyberLens Project — Complete Build Summary
 
 ## 🎯 Project Overview
 
-**PhishGuard** is a full-stack cybersecurity web application that analyzes URLs and emails for phishing threats using:
+**CyberLens** is a full-stack cybersecurity web application that analyzes URLs and emails for phishing threats using:
 - **90+ Security Engines** (VirusTotal)
 - **Google Safe Browsing API** (real-time threat detection)
 - **Gemini 1.5 Flash AI** (social engineering analysis)
@@ -12,7 +12,7 @@
 ## 📦 Complete File Structure
 
 ```
-phishguard/
+cyberlens/
 ├── README.md                           # Full documentation
 ├── SETUP.md                            # Step-by-step setup guide
 │
@@ -146,7 +146,7 @@ phishguard/
 
 ### Navbar.jsx
 - Fixed navigation with logo
-- "PHISHGUARD" text in gradient
+- "CYBERLENS" text in gradient
 - Links: home, scan-url, scan-email
 - Active link highlighting
 - "SYSTEM ONLINE" status indicator
@@ -391,7 +391,7 @@ Saves to localStorage for history
 
 ---
 
-**PhishGuard is now ready to use! 🛡️**
+**CyberLens is now ready to use! 🛡️**
 
 Next steps:
 1. Add your API keys to `backend/.env`
