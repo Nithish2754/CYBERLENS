@@ -6,7 +6,7 @@ async def check_url(url: str) -> dict:
     endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={settings.SAFE_BROWSING_API_KEY}"
     
     payload = {
-        "client": {"clientId": "phishguard", "clientVersion": "1.0"},
+        "client": {"clientId": "cyberlens", "clientVersion": "1.0"},
         "threatInfo": {
             "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
             "platformTypes": ["ANY_PLATFORM"],

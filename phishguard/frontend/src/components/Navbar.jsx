@@ -14,8 +14,8 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-2 group">
           <Shield className="w-6 h-6 text-cyber-accent-cyan group-hover:text-cyber-accent-purple transition" />
           <span className="font-mono text-lg font-bold">
-            <span className="text-gradient">PHISH</span>
-            <span className="text-cyber-accent-cyan">GUARD</span>
+            <span className="text-gradient">CYBER</span>
+            <span className="text-cyber-accent-cyan">LENS</span>
           </span>
         </Link>
 
@@ -50,6 +50,16 @@ export default function Navbar() {
             }`}
           >
             [~/ scan-email]
+          </Link>
+          <Link
+            to="/audit"
+            className={`font-mono text-sm transition ${
+              isActive('/audit') 
+                ? 'text-cyber-accent-cyan border-b-2 border-cyber-accent-cyan' 
+                : 'text-cyber-text-secondary hover:text-cyber-accent-cyan'
+            }`}
+          >
+            [~/ audit]
           </Link>
         </div>
 

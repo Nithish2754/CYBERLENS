@@ -3,7 +3,7 @@ from config import settings
 import json
 import asyncio
 
-MODEL_NAMES = ["gemini-1.5-flash", "gemini-1.0", "gemini-1.5-pro", "gemini-1.0-mini"]
+MODEL_NAMES = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest", "gemini-pro"]
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
@@ -251,25 +251,44 @@ this is a legitimate business being audited, not an attack target.
 
 
 async def summarize_full_audit(audit_result: dict) -> str:
-    """Summarize the full website audit (security, performance, SEO, broken links)."""
-    overall = audit_result.get('overall_score', 'N/A')
-    grade = audit_result.get('grade', 'N/A')
-
+    top_issues = "\n".join([
+        f"- [{i['severity']}] ({i.get('category', '')}) {i['issue']}"
+        for i in audit_result.get("all_issues", [])[:10]
+    ])
+    cats = audit_result.get('categories', {})
     prompt = f"""
-You are a senior web auditor. Produce a concise 4-sentence executive summary for a website audit.
-Include the overall score and grade, the top security risk, one performance or SEO recommendation, and a prioritized next action.
-Respond in plain text, exactly 4 short sentences.
+You are a professional web security consultant.
+A comprehensive 7-category advanced security audit was just completed:
 
-Overall Score: {overall}
-Grade: {grade}
+Overall Security Score: {audit_result.get('overall_score')}/100 (Grade: {audit_result.get('grade')})
 
-Top findings (up to 6):
+SCORE BREAKDOWN (weighted):
+- SSL/TLS Security (20% weight):       {cats.get('ssl_tls', {}).get('score', 'N/A')}/100
+- Security Headers (20% weight):       {cats.get('headers', {}).get('score', 'N/A')}/100
+- DNS Security (10% weight):           {cats.get('dns', {}).get('score', 'N/A')}/100
+- Domain Reputation (15% weight):      {cats.get('reputation', {}).get('score', 'N/A')}/100
+- Vulnerability Assessment (20% weight): {cats.get('vulns', {}).get('score', 'N/A')}/100
+- Threat Intelligence (10% weight):    {cats.get('threat', {}).get('score', 'N/A')}/100
+- Cookie Security (5% weight):         {cats.get('cookies', {}).get('score', 'N/A')}/100
+
+ISSUE COUNTS:
+- Critical: {audit_result.get('critical_issues', 0)}
+- High: {audit_result.get('high_issues', 0)}
+- Medium: {audit_result.get('medium_issues', 0)}
+- Low: {audit_result.get('low_issues', 0)}
+- Total: {audit_result.get('total_issues', 0)}
+
+TOP ISSUES DETECTED:
+{top_issues}
+
+Write a 4-5 sentence professional executive summary covering:
+1. Overall security verdict based on the weighted score
+2. The weakest category and its impact on the business
+3. Top 2 quick wins that would have the biggest impact (be specific)
+4. Final recommendation
+
+Keep it clear, actionable, and non-technical enough for a business owner to understand.
 """
-    findings = audit_result.get('all_issues', [])[:6]
-    for f in findings:
-        prompt += f"- [{f.get('severity')}] {f.get('issue')}\n"
-
-    # Try AI models first
     for model_name in MODEL_NAMES:
         try:
             model = genai.GenerativeModel(model_name)
@@ -278,31 +297,27 @@ Top findings (up to 6):
         except Exception as e:
             print(f"Full audit summary error ({model_name}): {type(e).__name__}: {e}")
 
-    # Fallback deterministic summary
-    parts = []
-    parts.append(f"Overall grade is {grade} ({overall}/100).")
-    issues = audit_result.get('all_issues', [])
-    top_high = [i for i in issues if i.get('severity') == 'CRITICAL' or i.get('severity') == 'HIGH']
-    if top_high:
-        parts.append(f"Top risk: {top_high[0].get('issue')}.")
-    else:
-        parts.append("No critical security risks found.")
+    score = audit_result.get('overall_score', 0)
+    grade = audit_result.get('grade', 'N/A')
+    crit = audit_result.get('critical_issues', 0)
+    high = audit_result.get('high_issues', 0)
 
-    # pick a performance or seo issue
-    perf = audit_result.get('performance', {}).get('issues', [])
-    seo = audit_result.get('seo', {}).get('issues', [])
-    if perf:
-        parts.append(f"Performance suggestion: {perf[0].get('issue')}.")
-    elif seo:
-        parts.append(f"SEO suggestion: {seo[0].get('issue')}.")
+    if score >= 80:
+        return (
+            f"This website scores {score}/100 (Grade: {grade}), indicating excellent overall security posture. "
+            f"There are {crit} critical and {high} high-severity issues to address for further improvement. "
+            "Continue monitoring and applying recommended fixes to maintain this standard."
+        )
+    elif score >= 60:
+        return (
+            f"This website scored {score}/100 (Grade: {grade}), showing moderate security health with clear room to improve. "
+            f"There are {crit} critical and {high} high-severity issues requiring prompt attention. "
+            "Addressing the top issues across the 7 security categories will significantly boost the overall score."
+        )
     else:
-        parts.append("No major performance or SEO issues detected.")
-
-    # final recommendation
-    if top_high:
-        parts.append(f"Recommended next action: {top_high[0].get('fix') if top_high[0].get('fix') else 'Investigate the top issue immediately.'}")
-    else:
-        parts.append("Recommended next action: Review the minor issues and schedule fixes.")
-
-    return " ".join(parts)
+        return (
+            f"This website scored {score}/100 (Grade: {grade}) — significant security improvements are needed. "
+            f"There are {crit} critical issues that pose immediate risks and must be resolved urgently. "
+            "A systematic review of all 7 security assessment categories is strongly recommended."
+        )
 

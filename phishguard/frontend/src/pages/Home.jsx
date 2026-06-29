@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Globe, Mail, Brain, CheckCircle, Zap, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
+import layatechLogo from '../assets/layatech-logo.png'
 
 export default function Home() {
   const containerVariants = {
@@ -74,7 +75,7 @@ export default function Home() {
         {/* Stats Bar */}
         <motion.div
           variants={itemVariants}
-          className="flex justify-center gap-12 mb-20 font-mono text-cyber-text-secondary text-sm"
+          className="flex justify-center gap-12 mb-8 font-mono text-cyber-text-secondary text-sm"
         >
           <div className="flex items-center gap-2">
             <CheckCircle size={16} className="text-cyber-accent-green" />
@@ -89,6 +90,56 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Shield size={16} className="text-cyber-accent-purple" />
             Real-time Detection
+          </div>
+        </motion.div>
+
+        {/* Internship Credit */}
+        <motion.div variants={itemVariants}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+            padding: "14px 28px",
+            background: "rgba(0, 212, 255, 0.04)",
+            border: "1px solid rgba(0, 212, 255, 0.15)",
+            borderRadius: "12px",
+            width: "fit-content",
+            margin: "0 auto 48px auto"
+          }}>
+            <span style={{
+              fontSize: "12px",
+              color: "#8b949e",
+              fontFamily: "JetBrains Mono",
+              letterSpacing: "0.05em"
+            }}>
+              DEVELOPED DURING INTERNSHIP AT
+            </span>
+            <div style={{
+              background: "white",
+              borderRadius: "6px",
+              padding: "4px 10px",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              <img
+                src={layatechLogo}
+                alt="Laya Tech"
+                style={{
+                  height: "28px",
+                  objectFit: "contain",
+                  filter: "brightness(1)",
+                  opacity: 0.9
+                }}
+              />
+            </div>
+            <span style={{
+              fontSize: "11px",
+              color: "#8b949e",
+              fontFamily: "JetBrains Mono"
+            }}>
+              2026
+            </span>
           </div>
         </motion.div>
 
@@ -146,7 +197,7 @@ export default function Home() {
 
         {/* Footer */}
         <motion.div variants={itemVariants} className="text-center text-cyber-text-secondary font-mono text-sm">
-          <p>PhishGuard | Built with FastAPI + React + Gemini AI</p>
+          <p>CyberLens | Built with FastAPI + React + Gemini AI</p>
         </motion.div>
       </motion.div>
     </div>

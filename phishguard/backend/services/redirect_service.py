@@ -23,7 +23,7 @@ async def analyze_redirects(
             timeout=10,
             follow_redirects=True,
             max_redirects=MAX_REDIRECTS,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; PhishGuard/1.0)"}
+            headers={"User-Agent": "Mozilla/5.0 (compatible; CyberLens/1.0)"}
         ) as client:
             r = await client.get(url)
 

@@ -7,11 +7,16 @@ export default function ThreatGauge({ score = 0, level = 'SAFE' }) {
   const displayScore = Math.round(normalized)
 
   const getThreatColor = () => {
-    // New thresholds:
-    // 0-19: green, 20-44: yellow, 45-69: orange, 70-100: red
-    if (displayScore <= 19 || level === 'SAFE') return '#00ff88'
-    if (displayScore <= 44 || level === 'MEDIUM RISK') return '#ffd700'
-    if (displayScore <= 69 || level === 'HIGH RISK') return '#f97316'
+    if (typeof level === 'string') {
+      const normalized = level.toUpperCase()
+      if (['A', 'B', 'SAFE'].includes(normalized)) return '#00ff88'
+      if (['C', 'LOW RISK', 'MEDIUM RISK'].includes(normalized)) return '#ffd700'
+      if (['D', 'HIGH RISK'].includes(normalized)) return '#f97316'
+      if (['F', 'CRITICAL THREAT'].includes(normalized)) return '#ff0040'
+    }
+    if (displayScore <= 19) return '#00ff88'
+    if (displayScore <= 44) return '#ffd700'
+    if (displayScore <= 69) return '#f97316'
     return '#ff0040'
   }
 

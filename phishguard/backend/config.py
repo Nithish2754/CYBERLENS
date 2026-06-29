@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     IPQS_API_KEY: str = ""
     SHODAN_API_KEY: str = ""
     PHISHTANK_API_KEY: str = ""
+    ABUSEIPDB_API_KEY: str = ""
+    OTX_API_KEY: str = ""
     
     class Config:
         env_file = ".env"

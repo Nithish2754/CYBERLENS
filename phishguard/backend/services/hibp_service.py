@@ -7,7 +7,7 @@ async def check_domain_breaches(domain: str) -> dict:
         async with httpx.AsyncClient(timeout=15) as client:
             response = await client.get(
                 "https://haveibeenpwned.com/api/v3/breaches",
-                headers={"User-Agent": "PhishGuard-Security-Audit"}
+                headers={"User-Agent": "CyberLens-Security-Audit"}
             )
             if response.status_code == 200:
                 all_breaches = response.json()

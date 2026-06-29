@@ -15,7 +15,7 @@ async def run_security_audit(url: str) -> dict:
 
     async with httpx.AsyncClient(
         timeout=15, follow_redirects=True,
-        headers={"User-Agent": "Mozilla/5.0 (compatible; PhishGuard-Audit/1.0)"}
+        headers={"User-Agent": "Mozilla/5.0 (compatible; CyberLens-Audit/1.0)"}
     ) as client:
         try:
             response = await client.get(url)

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import url_scan, email_scan, security_audit
 
-app = FastAPI(title="PhishGuard API", version="1.0.0")
+app = FastAPI(title="CyberLens API", version="1.0.0")
 
 # Configure CORS for frontend
 # During local development allow all origins to avoid localhost/127.0.0.1/hostname mismatches.
@@ -22,7 +22,7 @@ app.include_router(security_audit.router, prefix="/api")
 @app.get("/")
 async def root():
     """API health check."""
-    return {"status": "PhishGuard API running", "version": "1.0.0"}
+    return {"status": "CyberLens API running", "version": "1.0.0"}
 
 @app.get("/health")
 async def health_check():
